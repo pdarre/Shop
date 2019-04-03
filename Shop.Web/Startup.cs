@@ -32,6 +32,7 @@
             services.AddTransient<SeedDb>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUserHelper, UserHelper>();
+            services.AddScoped<ICountryRepository, CountryRepository>();
 
             services.AddIdentity<User, IdentityRole>(cfg =>
             {
