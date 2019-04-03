@@ -1,13 +1,16 @@
 ﻿namespace Shop.Web
 {
+    using Data;
+    using Data.Entities;
+    using Helpers;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Shop.Web.Data;
 
     public class Startup
     {
@@ -27,8 +30,20 @@
             });
 
             services.AddTransient<SeedDb>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IUserHelper, UserHelper>();
 
-            services.AddScoped<IRepository, Repository>();
+            services.AddIdentity<User, IdentityRole>(cfg =>
+            {
+                cfg.User.RequireUniqueEmail = true;
+                cfg.Password.RequireDigit = false;
+                cfg.Password.RequiredUniqueChars = 0;
+                cfg.Password.RequireLowercase = false;
+                cfg.Password.RequireNonAlphanumeric = false;
+                cfg.Password.RequireUppercase = false;
+            })
+           .AddEntityFrameworkStores<DataContext>();
+
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -56,6 +71,7 @@
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseCookiePolicy();
 
             app.UseMvc(routes =>
